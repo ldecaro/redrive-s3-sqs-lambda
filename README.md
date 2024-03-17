@@ -52,6 +52,7 @@ An example is shown below:
 
 2. Adding 100 files to S3 bucket:
 ```
+echo "ok ok" >> testfile
 for i in {1..100}; do aws s3api put-object --bucket test-bucket-redrive --key test-$i --body testfile; done
 ```
 
