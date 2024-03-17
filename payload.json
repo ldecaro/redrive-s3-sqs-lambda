@@ -1,0 +1,5 @@
+{
+    "s3Prefix": "test-bucket-redrive/testprefix",
+    "queueURL": "https://sqs.us-east-1.amazonaws.com/587929909912/RedriveLambda-RedriveLambdaQueue30239EC5-zU8oDonOIwhH",
+    "minutes": 0
+}

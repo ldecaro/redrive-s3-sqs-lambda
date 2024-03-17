@@ -1,0 +1,5 @@
+{
+    "bucketName": "test-bucket-redrive",
+    "queueURL": "https://sqs.us-east-1.amazonaws.com/587929909912/RedriveLambda-RedriveLambdaQueue30239EC5-zU8oDonOIwhH",
+    "keys": ["test-1", "test-2"]
+}

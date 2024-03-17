@@ -1,18 +1,72 @@
-# Welcome to your CDK Java project!
+# S3 Redrive Lambda!
 
-This is a blank project for CDK development with Java.
+It replays S3 PUT events. Scan files in your S3 bucket (based on prefix, keys or lastModifiedDate) and send PUT messages to a SQS queue.
+
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 It is a [Maven](https://maven.apache.org/) based project, so you can open this project with any Maven compatible Java IDE to build and run tests.
 
-## Useful commands
+## Architecture
 
- * `mvn package`     compile and run tests
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+<!-- image -->
+![Architecture](/img/redrive-architecture.png)
+
+
+## Running
+
+```
+mvn clean package
+cdk synth
+cdk deploy RedriveLambda
+```
+
+## Testing
+
+1. Update the payload.json or payload-keys.json depending on your use case. 
+
+If using file `payload.json`:
+- s3Prefix is your bucketName or bucketName/folder;
+- minutes means how old you want your s3 files to be (in minutes back from now). To scan all files, choose minutes = 0; 
+
+An example is shown below:
+```
+{
+    "s3Prefix": "my-dead-letter-bucket",
+    "queueURL": "https://sqs.us-east-1.amazonaws.com/587929909912/RedriveLambda-RedriveLambdaQueue30239EC5-zU8oDonOIwhH",
+    "minutes": 600
+}
+```
+If using file `payload-keys.json`
+- bucketName should contain only the bucket name;
+- queueURL is the URL of the SQS queue you want to send PUT messages to.
+- keys is an array of object keys within bucket
+
+An example is shown below:
+```
+{
+    "bucketName": "test-bucket-redrive",
+    "queueURL": "https://sqs.us-east-1.amazonaws.com/587929909912/RedriveLambda-RedriveLambdaQueue30239EC5-zU8oDonOIwhH",
+    "keys": ["test-1", "test-2"]
+}
+```
+
+2. Adding 100 files to S3 bucket:
+for i in {1..100}; do aws s3api put-object --bucket test-bucket-redrive --key test-$i --body testfile; done
+
+3. Invoking the lambda:
+aws lambda invoke --function-name my-lambda-function-name --payload file://payload.json output.json --cli-binary-format raw-in-base64-out
+
+## Useful commands:
+
+Reading messages from SQS queue:
+```
+aws sqs receive-message --queue-url $QUEUE_URL --max-number-of-messages 10 --wait-time-seconds 20 --region us-east-1
+```
+
+Clean SQS queue:
+```
+ aws sqs purge-queue --queue-url $QUEUE_URL
+```
 
 Enjoy!
