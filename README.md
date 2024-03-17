@@ -2,10 +2,7 @@
 
 It replays S3 PUT events. Scan files in your S3 bucket (based on prefix, keys or lastModifiedDate) and send PUT messages to a SQS queue.
 
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
-
-It is a [Maven](https://maven.apache.org/) based project, so you can open this project with any Maven compatible Java IDE to build and run tests.
+This is Java 17 project that uses [Maven](https://maven.apache.org/), so you can open this project with any Maven compatible Java IDE to build and run tests.
 
 ## Architecture
 
@@ -23,6 +20,8 @@ cdk deploy RedriveLambda
 
 ## Testing
 
+We need to invoke a lambda sending a payload with parameters. There are two options of payload depending if you want to create PUT events for files from a given prefix or if you wan to provide the keys.
+
 1. Update the payload.json or payload-keys.json depending on your use case. 
 
 If using file `payload.json`:
@@ -32,7 +31,7 @@ If using file `payload.json`:
 An example is shown below:
 ```
 {
-    "s3Prefix": "my-dead-letter-bucket",
+    "s3Prefix": "my-dead-letter-bucket/myprefix",
     "queueURL": "https://sqs.us-east-1.amazonaws.com/587929909912/RedriveLambda-RedriveLambdaQueue30239EC5-zU8oDonOIwhH",
     "minutes": 600
 }
@@ -52,11 +51,14 @@ An example is shown below:
 ```
 
 2. Adding 100 files to S3 bucket:
+```
 for i in {1..100}; do aws s3api put-object --bucket test-bucket-redrive --key test-$i --body testfile; done
+```
 
 3. Invoking the lambda:
+```
 aws lambda invoke --function-name my-lambda-function-name --payload file://payload.json output.json --cli-binary-format raw-in-base64-out
-
+```
 ## Useful commands:
 
 Reading messages from SQS queue:
