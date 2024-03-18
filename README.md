@@ -1,6 +1,6 @@
 # S3 Redrive Lambda!
 
-It replays S3 PUT events. Scan files in your S3 bucket (based on prefix, keys or lastModifiedDate) and send PUT messages to a SQS queue.
+It replays S3 PUT events. Scans files in your S3 bucket (based on prefix, keys or lastModifiedDate) and send S3 PUT events to a SQS queue.
 
 This is Java 17 project that uses [Maven](https://maven.apache.org/), so you can open this project with any Maven compatible Java IDE to build and run tests.
 
@@ -20,9 +20,9 @@ cdk deploy RedriveLambda
 
 ## Testing
 
-We need to invoke a lambda sending a payload with parameters. There are two options of payload depending if you want to create PUT events for files from a given prefix or if you wan to provide the keys.
+Invoke a lambda passing parameters through a payload file. There are two types of payload that can be sent to the lambda. You can choose between scanning files based on a s3 prefix (payload.json) or using keys (payload-keys.json).
 
-1. Update the payload.json or payload-keys.json depending on your use case. 
+1. Update the file payload.json or payload-keys.json depending on your use case. 
 
 If using file `payload.json`:
 - s3Prefix is your bucketName or bucketName/folder;
