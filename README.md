@@ -20,7 +20,7 @@ cdk deploy RedriveLambda
 
 ## Testing
 
-Invoke a lambda passing parameters through a payload file. There are two types of payload that can be sent to the lambda. You can choose between scanning files based on a s3 prefix (payload.json) or using keys (payload-keys.json).
+Invoke a lambda passing parameters in a payload file. Depending on the use case, there are two types of payload that can be sent to the lambda: you can choose between scanning files based on a s3 prefix (payload.json) or using keys (payload-keys.json).
 
 1. Update the file payload.json or payload-keys.json depending on your use case. 
 
