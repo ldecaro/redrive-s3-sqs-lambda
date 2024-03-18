@@ -6,9 +6,7 @@ This is Java 17 project that uses [Maven](https://maven.apache.org/), so you can
 
 ## Architecture
 
-<!-- image -->
-![Architecture](/img/redrive-architecture.png)
-
+![Architecture](/img/redrive-architecture.png){width=40%}
 
 ## Running
 
