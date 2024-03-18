@@ -22,6 +22,8 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 public class Redrive implements RequestHandler<RedriveParams, String> {
 
     private static LambdaLogger logger = null;
+    private static final SqsClient SQS_CLIENT =  SqsClient.create();
+    private static final S3Client S3_CLIENT =  S3Client.create();
 
     public String handleRequest(Redrive.RedriveParams input, Context context) {
 
@@ -55,12 +57,11 @@ public class Redrive implements RequestHandler<RedriveParams, String> {
             throw new IllegalArgumentException("keys cannot start with /. There are "+wrongKeys+" wrong keys");
         }
 
-        SqsClient sqs = SqsClient.create();
         int count = 0;
         for(String key: keys){
 
             ++count;
-            sendMessage(bucketName, key, queueUrl, sqs);
+            sendMessage(bucketName, key, queueUrl);
         }
         return count;
     }
@@ -69,8 +70,6 @@ public class Redrive implements RequestHandler<RedriveParams, String> {
 
         logger.log("Sending messages to SQS");
         Integer count = 0;
-        S3Client s3 = S3Client.create();
-        SqsClient sqs = SqsClient.create();
 
         String bucketName   =   s3Prefix.indexOf("/")!=-1 ? 
             s3Prefix.substring(0, s3Prefix.indexOf('/')) 
@@ -94,7 +93,7 @@ public class Redrive implements RequestHandler<RedriveParams, String> {
         Instant now =   Instant.now();
         ListObjectsV2Response response  =   null;
         do {
-            response = s3.listObjectsV2(listReq);
+            response = Redrive.S3_CLIENT.listObjectsV2(listReq);
             logger.log("Found "+response.keyCount()+" files");
             //list of s3 object keys separated by comma
             logger.log("Keys: "+response.contents().stream().map(S3Object::key).collect(Collectors.joining(",")));
@@ -103,13 +102,13 @@ public class Redrive implements RequestHandler<RedriveParams, String> {
 
                 if( minutes == 0 ){
                     ++count;
-                    sendMessage(bucketName, object.key(), queueUrl, sqs);
+                    sendMessage(bucketName, object.key(), queueUrl);
 
                 }else{
                     if( now.minusSeconds(minutes*60).isBefore(object.lastModified())){
 
                         ++count;
-                        sendMessage(bucketName, object.key(), queueUrl, sqs);
+                        sendMessage(bucketName, object.key(), queueUrl);
                     }
                 }
             }
@@ -123,7 +122,7 @@ public class Redrive implements RequestHandler<RedriveParams, String> {
         return count;
     }
 
-    private void sendMessage(String bucketName, String key, String queueUrl, SqsClient sqs){
+    private void sendMessage(String bucketName, String key, String queueUrl){
         
         String messageBody = getS3PutPayload().replace("{now}", Instant.now().toString()).replace("{bucketName}", bucketName).replace("{key}", key);
         logger.log("Sending message for "+bucketName+"/"+key);
@@ -132,7 +131,7 @@ public class Redrive implements RequestHandler<RedriveParams, String> {
             .messageBody(messageBody)
             .build();
 
-        sqs.sendMessage(sendReq);
+        Redrive.SQS_CLIENT.sendMessage(sendReq);
     }
 
     private static String getS3PutPayload(){
