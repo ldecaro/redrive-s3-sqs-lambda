@@ -6,7 +6,7 @@ This is Java 17 project that uses [Maven](https://maven.apache.org/), so you can
 
 ## Architecture
 
-<div style="width: 80%">
+<div style="width: 60%">
 
 ![Architecture](/img/redrive-architecture.png)
 
