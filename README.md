@@ -6,7 +6,9 @@ This is Java 17 project that uses [Maven](https://maven.apache.org/), so you can
 
 ## Architecture
 
+<p align="center">
 <img src="https://github.com/ldecaro/redrive-s3-sqs-lambda/blob/main/img/redrive-architecture.png" width=70% height=70%>
+</p>
 
 ## Running
 
